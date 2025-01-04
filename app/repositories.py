@@ -49,8 +49,7 @@ class ParsingInformationRepository(ParsingInformationImpl):
         try:
             return await self.__create_new_data(data=info_for_create)
         except Exception as e:
-            self.__log_write_error(e)
-            return None
+            return self.__log_write_error(e)
 
     async def __create_new_data(self, data: ParsingInformationCreate) -> Optional[ParsingInformation]:
         async for session in self.db_helper.session():
@@ -62,8 +61,7 @@ class ParsingInformationRepository(ParsingInformationImpl):
         try:
             return await self.__delete_all_references(id_value=id_value)
         except Exception as e:
-            self.__log_write_error(e)
-            return None
+            return self.__log_write_error(e)
 
     async def __delete_all_references(self, id_value: int) -> None:
         async for session in self.db_helper.session():
@@ -75,8 +73,12 @@ class ParsingInformationRepository(ParsingInformationImpl):
         try:
             return await self.__update_data(id_value=id_value, data_for_update=info_for_update)
         except Exception as e:
-            self.__log_write_error(e)
-            return None
+            return self.__log_write_error(e)
+
+    @staticmethod
+    def __log_write_error(message) -> None:
+        logger.error(message)
+        return None
 
     async def __update_data(self, id_value: int, data_for_update: ParsingInformation):
         async for session in self.db_helper.session():
@@ -99,7 +101,3 @@ class ParsingInformationRepository(ParsingInformationImpl):
     @staticmethod
     async def __commit_session(session: AsyncSession):
         await session.commit()
-
-    @staticmethod
-    def __log_write_error(message):
-        logger.error(message)
